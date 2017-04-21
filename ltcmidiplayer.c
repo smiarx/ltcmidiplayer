@@ -122,6 +122,22 @@ static inline void fatal(const char* msg,...){
 
 
 void cleanup(void){
+    snd_seq_event_t ctrlev;
+
+    /* send CC123 -> release all voices */
+    snd_seq_ev_clear(&ctrlev);
+    snd_seq_ev_set_fixed(&ctrlev);
+    ctrlev.source.port = 0;
+    ctrlev.queue = SND_SEQ_QUEUE_DIRECT;
+    snd_seq_ev_set_subs(&ctrlev);
+    ctrlev.type=SND_SEQ_EVENT_CONTROLLER;
+    ctrlev.data.control.channel = 0;
+    ctrlev.data.control.param = 123;
+    ctrlev.data.control.value = 127;
+    snd_seq_event_output(seq, &ctrlev);
+    snd_seq_drain_output(seq);
+
+
     if(jclient){
         jack_client_close(jclient);
         jclient=NULL;
@@ -132,6 +148,7 @@ void cleanup(void){
     }
     ltc_decoder_free(ltcdecoder);
     snd_seq_close(seq);
+
     verbose("byebye");
 }
 
@@ -166,7 +183,7 @@ static inline int frame2tick(LTCFrameExt* frame){
 static void loop(void){
     LTCFrameExt frame, prevframe;
     snd_seq_event_t ev, timerev, ctrlev;
-    snd_seq_queue_status_t* status;
+    //snd_seq_queue_status_t* status;
     int noframecycles=0, stopped=1;
     int skew;
 
@@ -186,7 +203,7 @@ static void loop(void){
 #endif
 
 
-    snd_seq_queue_status_alloca(&status);
+    //snd_seq_queue_status_alloca(&status);
 
     // common settings for all events
     snd_seq_ev_clear(&ev);
@@ -390,7 +407,7 @@ static void loop(void){
 
             //empty buffer
             snd_seq_drain_output(seq);
-            snd_seq_get_queue_status(seq,mqueue,status);
+            //snd_seq_get_queue_status(seq,mqueue,status);
             //verbose("current tick %d --- %d", tick, snd_seq_queue_status_get_tick_time(status));
 
         }
