@@ -2,6 +2,7 @@
 //#define VERBOSE
 #define RELEASE_WHEN_STOP // send release control when stop
 //#define RELEASE_WHEN_DISCONTINUITY //send release control when discontinuity
+#define START_STOP_DELAY
 #define SEND_PITCH_CONTROL
 #define TRANSPOSE_CC 112
 
@@ -320,6 +321,13 @@ static void loop(void){
                 stopped=0;
                 verbose("PLAY");
 
+#ifdef START_STOP_DELAY
+                /* send CC65 -> control delay */
+                ctrlev.data.control.channel = 0;
+                ctrlev.data.control.param = 65;
+                ctrlev.data.control.value = 127;
+                snd_seq_event_output(seq, &ctrlev);
+#endif
                 
                 //conitnue queue
                 snd_seq_continue_queue(seq, mqueue, NULL);
@@ -426,6 +434,14 @@ static void loop(void){
             ctrlev.data.control.value = 0;
             snd_seq_event_output(seq, &ctrlev);
 #endif
+#ifdef START_STOP_DELAY
+            /* send CC65 -> control delay */
+            ctrlev.data.control.channel = 0;
+            ctrlev.data.control.param = 65;
+            ctrlev.data.control.value = 0;
+            snd_seq_event_output(seq, &ctrlev);
+#endif
+
 
 
             snd_seq_drain_output(seq);
