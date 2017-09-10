@@ -133,7 +133,7 @@ void cleanup(void){
     ctrlev.type=SND_SEQ_EVENT_CONTROLLER;
     ctrlev.data.control.channel = 0;
     ctrlev.data.control.param = 123;
-    ctrlev.data.control.value = 127;
+    ctrlev.data.control.value = 0;
     snd_seq_event_output(seq, &ctrlev);
     snd_seq_drain_output(seq);
 
@@ -257,7 +257,7 @@ static void loop(void){
                 /* send CC123 -> release all voices */
                 ctrlev.data.control.channel = 0;
                 ctrlev.data.control.param = 123;
-                ctrlev.data.control.value = 127;
+                ctrlev.data.control.value = 0;
                 snd_seq_event_output(seq, &ctrlev);
 #endif
 
@@ -423,7 +423,7 @@ static void loop(void){
             /* send CC123 -> release all voices */
             ctrlev.data.control.channel = 0;
             ctrlev.data.control.param = 123;
-            ctrlev.data.control.value = 127;
+            ctrlev.data.control.value = 0;
             snd_seq_event_output(seq, &ctrlev);
 #endif
 
